@@ -5,7 +5,7 @@
 class traefik::params {
   $package_name                   = 'traefik'
   $download_url_base              = 'https://github.com/containous/traefik/releases/download/'
-  $version                        = '1.1.2'
+  $version                        = '1.7.8'
   $service_name                   = 'traefik'
   $download_package_name          = 'traefik_linux-amd64'
   $config_path                    = '/etc/traefik'
@@ -23,7 +23,17 @@ class traefik::params {
         fail('Unsupported operating system version')
       }
     }
-  } else {
+  } elsif $::osfamily == 'Debian' {
+    case $::operatingsystemmajrelease {
+      '8', '9': {
+        $init_style = 'systemd'
+        $init_path = "/lib/systemd/system/${service_name}.service"
+      }
+      default: {
+        fail('Unsupported operating system version')
+      }
+    }
+  }else {
     fail('Unsupported operating system')
   }
 
